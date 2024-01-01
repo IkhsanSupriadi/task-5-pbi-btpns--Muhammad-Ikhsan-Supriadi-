@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm upgrade redis bitnami/redis \
+	--install \
+	--version 10.7.17 \
+	--values redis.yml

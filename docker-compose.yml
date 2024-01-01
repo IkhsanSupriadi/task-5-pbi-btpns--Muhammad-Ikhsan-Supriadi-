@@ -1,0 +1,28 @@
+---
+version: '3'
+services:
+  api-gateway:
+    build: ./api-gateway
+    restart: on-failure:5
+    environment:
+      - AUTH_SVC_URL=auth-svc:50051
+      - LOGISTIC_SVC_URL=logistic-svc:50052
+    ports:
+      - "3000:3000"
+    links:
+      - auth-svc
+      - logistic-svc
+  auth-svc:
+    build: ./auth-svc
+    restart: on-failure:5 
+    environment:
+      - DB_URL=postgres://orderfaz:orderfaz@192.168.241.239:5432/orderfaz
+      - DB_TEST_URL=postgres://orderfaz:orderfaz@192.168.241.239:5433/test_orderfaz
+  logistic-svc:
+    build: ./logistic-svc
+    restart: on-failure:5 
+    environment:
+      - DB_URL=postgres://orderfaz:orderfaz@192.168.241.239:5432/orderfaz
+      - DB_TEST_URL=postgres://orderfaz:orderfaz@192.168.241.239:5433/test_orderfaz
+networks:
+   default:

@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderfaz
+  labels:
+    app: orderfaz
+    component: auth-svc
+spec:
+  selector:
+    matchLabels:
+      app: orderfaz
+      component: auth-svc
+  template:
+    metadata:
+      labels:
+        app: orderfaz
+        component: auth-svc
+    spec:
+      containers:
+        - name: orderfaz
+          image: auth-svc
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: shared-config
+            - secretRef:
+                name: orderfaz
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: 100m
+      imagePullSecrets:
+        - name: gitlab-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderfaz
+  labels:
+    app: orderfaz
+    component: logistic-svc
+spec:
+  selector:
+    matchLabels:
+      app: orderfaz
+      component: logistic-svc
+  template:
+    metadata:
+      labels:
+        app: orderfaz
+        component: logistic-svc
+    spec:
+      containers:
+        - name: orderfaz
+          image: logistic-svc
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: shared-config
+            - secretRef:
+                name: orderfaz
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: 100m
+      imagePullSecrets:
+        - name: gitlab-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderfaz
+  labels:
+    app: orderfaz
+    component: api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: orderfaz
+      component: api-gateway
+  template:
+    metadata:
+      labels:
+        app: orderfaz
+        component: api-gateway
+    spec:
+      containers:
+        - name: orderfaz
+          image: api-gateway
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: shared-config
+            - secretRef:
+                name: orderfaz
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: 100m
+      imagePullSecrets:
+        - name: gitlab-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  labels:
+    app: orderfaz
+    component: api-gateway
+spec:
+  selector:
+    app: orderfaz
+    component: api-gateway
+    canary: 'false'
+  ports:
+    - protocol: http
+      port: 9090
+      targetPort: 3000
+---
